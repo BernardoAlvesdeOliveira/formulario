@@ -1195,7 +1195,7 @@
 
                     novos.forEach(file => {
                         const existe = uploadedFiles[tipo].some(f => f.name === file.name && f.size === file.size);
-                        if!existe) {
+                        if(!existe) {
                             uploadedFiles[tipo].push(file);
                             addFileToList(file, tipo, listContainer);
                         }
@@ -1248,7 +1248,7 @@
         }
 
         // Função para criar campos inline com tabulação
-        function createInlineFfields, totalWidth = 90) {
+        function createInlineF (fields, totalWidth = 90) {
             const fieldWidth = Math.floor(totalWidth / fields.length);
             return fields.map(field => {
                 const labelPart = `${field.label}:`;
@@ -1423,7 +1423,7 @@
                         {label: "Hora", value: getFormValue('horaOcorrencia')},
                         {label: "Nº Registro", value: getFormValue('numeroRegistro')}
                     ]),
-                    createField("Culpado", getRadioValue('culpadoAcidente') || ( ) Associado ( ) Terceiro')
+                    createField("Culpado", getRadioValue('culpadoAcidente') || '( ) Associado ( ) Terceiro')
                 ];
                 
                 addSection("DADOS DO ACIDENTE", acidenteFields, true);
@@ -1442,7 +1442,7 @@
                             {label: "RG", value: getFormValue('rgCondutor')},
                             {label: "CNH", value: getFormValue('cnhCondutor')}
                         ]),
-                        createField("Endereço", getFormValue('enderecoCondutor), 60),
+                        createField("Endereço", getFormValue('enderecoCondutor'), 60),
                         createInlineFields([
                             {label: "Bairro", value: getFormValue('bairroCondutor')},
                             {label: "Cidade", value: getFormValue('cidadeCondutor')},
@@ -1470,7 +1470,7 @@
                         createField("Endereço", getFormValue(`enderecoTerceiro${i}`), 60),
                         createInlineFields([
                             {label: "Bairro", value: getFormValue(`bairroTerceiro${i}`)},
-                            {label: "Cidade, value: getFormValue(`cidadeTerceiro${i}`)},
+                            {label: "Cidade", value: getFormValue(`cidadeTerceiro${i}`)},
                             {label: "CEP", value: getFormValue(`cepTerceiro${i}`)}
                         ]),
                         createInlineFields([
@@ -1738,7 +1738,8 @@
             
             // Validações do Associado (se marcado)
             if (associadoMarcado) {
-                const camposObrigatoriosAssociado                     { id: 'nomeAssociado', nome: 'Nome do Associado' },
+                const camposObrigatoriosAssociado = [                    
+                    { id: 'nomeAssociado', nome: 'Nome do Associado' },
                     { id: 'cpfCnpjAssociado', nome: 'CPF/CNPJ do Associado' },
                     { id: 'marcaAssociado', nome: 'Marca do Veículo Associado' },
                     { id: 'modeloAssociado', nome: 'Modelo do Veículo Associado' },
@@ -1753,16 +1754,6 @@
                         camposComErro.push(elemento);
                     }
                 });
-                
-                // Verificar se condutor foi preenchido (quando não é "eu mesmo")
-                const checkEuMesmo = document.getElementById('checkEuMesmo');
-              if (!checkEuMesmo.checked) {
-                    const nomeCondutor = document.getElementById('nomeCondutor');
-                    if (!nomeCondutor.value.trim()) {
-                        erros.push('Nome do Condutor (ou marque "Eu mesmo")');
-                        camposComErro.push(nomeCondutor);
-                    }
-                }
             }
             
             // Validações dos Terceiros
@@ -1832,7 +1823,8 @@
             enviarMensagem();
         }
 
-        // Inicializar máscaras para campos do associad  document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar máscaras para campos do associado
+        document.addEventListener('DOMContentLoaded', function() {
             setupFileUploads();
             
             // Máscaras para CPF/CNPJ
@@ -1841,11 +1833,12 @@
                 if (value.length <= 11) {
                     value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
                 } else {
-                    value = value.replace(/(\d{2})(d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+                    value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
                 }
                 e.target.value = value;
             });
 
+            // Máscara para CPF do condutor
             document.getElementById('cpfCondutor').addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
                 value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -1853,7 +1846,7 @@
             });
 
             // Máscara para CEP
-            document.getElementById('cepAssociado').addEvenListener('input', function(e) {
+            document.getElementById('cepAssociado').addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
                 value = value.replace(/(\d{5})(\d{3})/, '$1-$2');
                 e.target.value = value;
@@ -1863,7 +1856,7 @@
             ['whatsappAssociado', 'celularAssociado', 'telefoneCondutor'].forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
-                    element.addEventListener('input', funtion(e) {
+                    element.addEventListener('input', function(e) {
                         let value = e.target.value.replace(/\D/g, '');
                         if (value.length <= 10) {
                             value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
@@ -1876,7 +1869,7 @@
             });
 
             // Máscara para placa
-           document.getElementById('placaAssociado').addEventListener('input', function(e) {
+            document.getElementById('placaAssociado').addEventListener('input', function(e) {
                 let value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
                 if (value.length <= 7) {
                     value = value.replace(/([A-Z]{3})([0-9]{1})([A-Z0-9]{1})([0-9]{2})/, '$1-$2$3$4');
@@ -1890,13 +1883,12 @@
                 e.target.value = value;
             });
 
+            // Habilitar botão de gerar PDF
             document.querySelector('.generate-btn').disabled = false;
             const botaoPDF = document.querySelector('.generate-btn');
             botaoPDF.disabled = false;
             botaoPDF.classList.remove('bloqueado');
-
             
-
         });
 
         function mostrarErros(erros) {
