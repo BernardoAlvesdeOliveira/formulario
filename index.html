@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termo de Acionamento - Formulário</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B171B 0%, #0E4271 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0E4271, #8B171B);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            padding: 20px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .teste {
+            font-size: 12px;
+            text-indent: 20px;
+        }
+
+        .teste2 {
+            font-size: 12px;
+            text-indent: 20px;
+        }
+
+        .gambiarra {
+            font-size: 28px;
+        }
+
+        .section-title {
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 6px;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
+        }
+
+        input, select, textarea {
+            padding: 12px 14px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            width: 100%;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            background: white;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
+        }
+
+        .checkbox-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        input[type="checkbox"], input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .generate-btn.bloqueado {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            cursor: not-allowed;
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+        }
+
+        .generate-btn.bloqueado,
+        .generate-btn.bloqueado:hover,
+        .generate-btn.bloqueado:active {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            color: white;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto;
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(39, 174, 96, 0.4);
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .generate-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .inline-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .file-upload input[type="file"] {
+            padding: 10px 8px;
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            background: rgba(52, 152, 219, 0.05);
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+
+        .file-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .file-item {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            max-width: 100%;
+            word-break: break-word;
+        }
+
+        .file-remove {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        #erroUpload {
+            display: none;
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        #erroUpload.ativo {
+            display: block;
+        }
+
+        /* Estilos para validação */
+        .error-message {
+            display: none;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            max-width: 600px;
+            animation: slideInError 0.3s ease-out;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .error-message h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .error-message ul {
+            margin: 10px 0 0 0;
+            padding: 0;
+            list-style: none;
+            text-align: left;
+        }
+
+        .error-message li {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .error-message li:last-child {
+            border-bottom: none;
+        }
+
+        .error-message li::before {
+            content: "⚠️";
+            margin-right: 8px;
+        }
+
+        @keyframes slideInError {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Campos com erro */
+        .campo-erro {
+            border: 2px solid #e74c3c !important;
+            background-color: rgba(231, 76, 60, 0.1) !important;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Botão bloqueado */
+        .generate-btn.bloqueado {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d) !important;
+            cursor: not-allowed !important;
+            opacity: 0.7;
+        }
+
+        .generate-btn.bloqueado:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Responsividade específica para tablets */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-container {
+                padding: 30px 25px;
+            }
+            
+            .form-section {
+                padding: 25px 20px;
+            }
+        }
+
+        /* Responsividade para desktop pequeno */
+        @media (min-width: 769px) {
+            .form-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .form-container {
+                padding: 40px;
+            }
+            
+            .form-section {
+                padding: 30px;
+            }
+            
+            body {
+                padding: 20px;
+            }
+            
+            .generate-btn {
+                width: auto;
+                min-width: 300px;
+            }
+        }
+
+        /* Responsividade específica para mobile */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                border-radius: 15px;
+                margin: 0;
+            }
+
+            .header {
+                border-radius: 15px 15px 0 0;
+                padding: 20px 15px;
+            }
+
+            .form-container {
+                padding: 15px 10px;
+            }
+
+            .form-section {
+                margin-bottom: 20px;
+                padding: 15px 12px;
+                border-radius: 12px;
+            }
+
+            .section-title {
+                margin-bottom: 15px;
+                font-size: 1.1rem;
+            }
+
+            .form-grid {
+                gap: 12px;
+            }
+
+            input, select, textarea {
+                padding: 12px 10px;
+                font-size: 16px; /* Impede zoom no iOS */
+            }
+
+            .checkbox-group {
+                gap: 8px;
+            }
+
+            .checkbox-item {
+                padding: 6px 8px;
+                font-size: 0.9rem;
+            }
+
+            .inline-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .generate-btn {
+                margin: 25px auto;
+                padding: 14px 25px;
+                font-size: 1.1rem;
+            }
+
+            textarea {
+                min-height: 80px;
+            }
+
+            .file-item {
+                font-size: 0.85rem;
+                padding: 5px 8px;
+            }
+        }
+
+        /* Melhorias para acessibilidade em touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            .checkbox-item {
+                min-height: 44px;
+                padding: 10px 12px;
+            }
+            
+            input[type="checkbox"], input[type="radio"] {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .file-remove {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+        }
+
+        /* Otimizações para telas muito pequenas (< 360px) */
+        @media (max-width: 359px) {
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .header p {
+                font-size: 0.85rem;
+            }
+            
+            .section-title {
+                font-size: 1rem;
+            }
+            
+            .form-container {
+                padding: 12px 8px;
+            }
+            
+            .form-section {
+                padding: 12px 10px;
+            }
+        }
+
+        /* Orientação landscape em mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .header {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TERMO DE ACIONAMENTO</h1>
+            <p>Preencha os dados para gerar o documento</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="termoForm">
+                <!-- Acionando a proteção para -->
+                <div class="form-section">
+                    <h2 class="section-title">Acionando a proteção para:</h2>
+                    <div class="inline-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="checkAssociado" onchange="toggleSections()"> Associado
+                        </label>
+                        <div class="form-group">
+                            <label for="quantosTerceiros">Quantos terceiros envolvidos?</label>
+                            <input type="number" id="quantosTerceiros" name="quantosTerceiros" min="0" max="10" value="0" onchange="createTerceirosFields()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dados do Associado -->
+                <div class="form-section" id="secaoAssociado" style="display: none;">
+                    <h2 class="section-title">Dados do Associado</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nomeAssociado">Nome/Razão:</label>
+                            <input type="text" id="nomeAssociado" name="nomeAssociado" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cpfCnpjAssociado">CPF/CNPJ:</label>
+                            <input type="text" id="cpfCnpjAssociado" name="cpfCnpjAssociado" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rgIeAssociado">RG/I.E.:</label>
+                            <input type="text" id="rgIeAssociado" name="rgIeAssociado">
+                        </div>
+                        <div class="form-group">
+                            <label for="cnhAssociado">CNH:</label>
+                            <input type="text" id="cnhAssociado" name="cnhAssociado">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="enderecoAssociado">Endereço:</label>
+                            <input type="text" id="enderecoAssociado" name="enderecoAssociado">
+                        </div>
+                        <div class="form-group">
+                            <label for="bairroAssociado">Bairro:</label>
+                            <input type="text" id="bairroAssociado" name="bairroAssociado">
+                        </div>
+                        <div class="form-group">
+                            <label for="cidadeAssociado">Cidade:</label>
+                            <input type="text" id="cidadeAssociado" name="cidadeAssociado">
+                        </div>
+                        <div class="form-group">
+                            <label for="cepAssociado">CEP:</label>
+                            <input type="text" id="cepAssociado" name="cepAssociado">
+                        </div>
+                        <div class="form-group">
+                            <label for="whatsappAssociado">WhatsApp:</label>
+                            <input type="text" id="whatsappAssociado" name="whatsappAssociado">
+                        </div>
+                        <div class="form-group">
+                            <label for="celularAssociado">Celular:</label>
+                            <input type="text" id="celularAssociado" name="celularAssociado">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="emailAssociado">Email:</label>
+                            <input type="email" id="emailAssociado" name="emailAssociado">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dados do Veículo Associado -->
+                <div class="form-section" id="secaoVeiculoAssociado" style="display: none;">
+                    <h2 class="section-title">Dados do Veículo Associado</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="marcaAssociado">Marca (Fabricante):</label>
+                            <input type="text" id="marcaAssociado" name="marcaAssociado" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modeloAssociado">Modelo:</label>
+                            <input type="text" id="modeloAssociado" name="modeloAssociado" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="placaAssociado">Placa:</label>
+                            <input type="text" id="placaAssociado" name="placaAssociado" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="chassiAssociado">Chassi:</label>
+                            <input type="text" id="chassiAssociado" name="chassiAssociado">
+                        </div>
+                        <div class="form-group">
+                            <label for="anoFabAssociado">Ano (Fab./Mod.):</label>
+                            <input type="text" id="anoFabAssociado" name="anoFabAssociado">
+                        </div>
+                        <div class="form-group">
+                            <label for="portasAssociado">Portas:</label>
+                            <input type="number" id="portasAssociado" name="portasAssociado">
+                        </div>
+                        <div class="form-group">
+                            <label>Alienado (Financiado):</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="radio" name="alienadoAssociado" value="Sim"> Sim
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="radio" name="alienadoAssociado" value="Não"> Não
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="financeiraAssociado">Financeira:</label>
+                            <input type="text" id="financeiraAssociado" name="financeiraAssociado">
+                        </div>
+                        <div class="form-group">
+                            <label>Categoria:</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="radio" name="categoriaAssociado" value="Particular"> Particular
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="radio" name="categoriaAssociado" value="Táxi"> Táxi
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="radio" name="categoriaAssociado" value="Aluguel"> Aluguel
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dados do Acidente -->
+                <div class="form-section" id="secaoAcidente" style="display: none;">
+                    <h2 class="section-title">Dados do Acidente</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="dataOcorrencia">Data da ocorrência:</label>
+                            <input type="date" id="dataOcorrencia" name="dataOcorrencia" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="horaOcorrencia">Hora:</label>
+                            <input type="time" id="horaOcorrencia" name="horaOcorrencia">
+                        </div>
+                        <div class="form-group">
+                            <label for="numeroRegistro">Nº Registro:</label>
+                            <input type="text" id="numeroRegistro" name="numeroRegistro">
+                        </div>
+                        <div class="form-group">
+                            <label>Culpado do acidente:</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="radio" name="culpadoAcidente" value="Associado"> Associado
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="radio" name="culpadoAcidente" value="Terceiro"> Terceiro
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Condutor -->
+                <div class="form-section" id="secaoCondutor" style="display: none;">
+                    <h2 class="section-title">Dados do Condutor</h2>
+                    <div class="checkbox-group" style="margin-bottom: 20px;">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="checkEuMesmo" onchange="toggleCondutor()"> Eu mesmo
+                        </label>
+                    </div>
+                    <div id="camposCondutor">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="nomeCondutor">Condutor:</label>
+                                <input type="text" id="nomeCondutor" name="nomeCondutor">
+                            </div>
+                            <div class="form-group">
+                                <label for="cpfCondutor">CPF:</label>
+                                <input type="text" id="cpfCondutor" name="cpfCondutor">
+                            </div>
+                            <div class="form-group">
+                                <label for="rgCondutor">RG:</label>
+                                <input type="text" id="rgCondutor" name="rgCondutor">
+                            </div>
+                            <div class="form-group">
+                                <label for="cnhCondutor">CNH:</label>
+                                <input type="text" id="cnhCondutor" name="cnhCondutor">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="enderecoCondutor">Endereço:</label>
+                                <input type="text" id="enderecoCondutor" name="enderecoCondutor">
+                            </div>
+                            <div class="form-group">
+                                <label for="bairroCondutor">Bairro:</label>
+                                <input type="text" id="bairroCondutor" name="bairroCondutor">
+                            </div>
+                            <div class="form-group">
+                                <label for="cidadeCondutor">Cidade:</label>
+                                <input type="text" id="cidadeCondutor" name="cidadeCondutor">
+                            </div>
+                            <div class="form-group">
+                                <label for="telefoneCondutor">Tel:</label>
+                                <input type="text" id="telefoneCondutor" name="telefoneCondutor">
+                            </div>
+                            <div class="form-group">
+                                <label for="relacaoAssociado">Relação com o Associado:</label>
+                                <input type="text" id="relacaoAssociado" name="relacaoAssociado">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Container para seções de terceiros (será preenchido dinamicamente) -->
+                <div id="terceirosContainer"></div>
+
+                <!-- Narrativa do Acidente -->
+                <div class="form-section">
+                    <h2 class="section-title">Narrativa do Acidente</h2>
+                    <div class="form-group full-width">
+                        <label for="narrativaAcidente">Descreva com suas próprias palavras como ocorreu o acidente:</label>
+                        <textarea id="narrativaAcidente" name="narrativaAcidente" rows="6" placeholder="Descreva detalhadamente como aconteceu o acidente..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Anexos -->
+                <div class="form-section">
+                    <h2 class="section-title">Anexos</h2>
+                    <div class="form-grid">
+                        <!-- Documentos do Associado -->
+                        <div class="form-group">
+                            <label><b>Documentos do Associado:</b></label>
+                            <div class="teste" id="teste">
+                                <p>Documento com foto do proprietário do veículo (CNH ou RG);</p>
+                                <p>Documento do motorista no momento do acidente;</p>
+                                <p>Boletim de ocorrência em PDF;</p>
+                                <p>CRLV do veículo;</p>
+                                <p>Fotos e vídeos do acidente e danos no veículo;</p>
+                                <p>Comprovante de residência;</p>
+                            </div>
+                            &nbsp;
+                            <div class="file-upload">
+                                <input type="file" id="anexoDocumentosAssociado" name="anexoDocumentosAssociado" multiple accept=".pdf,.doc,.docx,.txt">
+                                <div id="documentosAssociadoList" class="file-list"></div>
+                            </div>
+                        </div>
+
+                        <!-- Documentos do Terceiro -->
+                        <div class="form-group">
+                            <label><b>Documentos do(s) Terceiro(s):</b></label>
+                            <div class="teste2" id="teste2">
+                                <p>CNH do terceiro;</p>
+                                <p>CRLV do veículo do terceiro;</p>
+                                <p>Fotos e vídeos do acidente e danos no veículo;</p>
+                                <p>Telefone de contato do terceiro;</p>
+                                <p>Comprovante de residência do terceiro.</p>
+                            </div>
+                            <div class="gambiarra" id="gambiarra">
+                                &nbsp;
+                            </div>
+                            <div class="file-upload">
+                                <input type="file" id="anexoDocumentosTerceiro" name="anexoDocumentosTerceiro" multiple accept=".pdf,.doc,.docx,.txt">
+                                <div id="documentosTerceiroList" class="file-list"></div>
+                            </div>
+                        </div>
+
+                        <!-- Fotos e Vídeos (mantém como estava) -->
+                        <div class="form-group">
+                            <label for="anexoFotos">Fotos</label>
+                            <div class="file-upload">
+                                <input type="file" id="anexoFotos" name="anexoFotos" multiple accept="image/*">
+                                <div id="fotosList" class="file-list"></div>
+                            </div>
+                        </div>
+
+                        <!-- Videos -->
+                        <div class="form-group"> 
+                            <label for="anexoVideos">Vídeos</label>
+                            <div class="file-upload">
+                                <input type="file" id="anexoVideos" name="anexoVideos" multiple accept="video/*">
+                                <div id="videosList" class="file-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="mensagemErro" class="error-message">
+                    <h3>⛔ Preencha os campos</h3>
+                    <ul id="listaErros"></ul>
+                </div>
+
+                <div id="erroUpload">Atenção: selecione todos os arquivos de uma vez!<br>Evite selecionar arquivos de forma separada.</div>
+                <button type="button" class="generate-btn" onclick="generatePDFEEnviar()">
+                    📄 Gerar PDF do Termo de Acionamento
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let terceirosCount = 0;
+        let uploadedFiles = {
+            documentosAssociado: [],
+            documentosTerceiro: [],
+            fotos: [],
+            videos: []
+        };
+
+        function justificarTexto(doc, texto, x, y, maxWidth, lineHeight) {
+            const linhas = doc.splitTextToSize(texto, maxWidth);
+            
+            linhas.forEach((linha, index) => {
+                const isLastLine = index === linhas.length - 1;
+                if (isLastLine || linha.trim().endsWith('.')) {
+                    // Última linha do parágrafo ou frase — alinhar à esquerda apenas
+                    doc.text(linha, x, y);
+                } else {
+                    // Justificar
+                    const palavras = linha.trim().split(' ');
+                    const palavrasSemEspacos = palavras.join('');
+                    const larguraTexto = doc.getTextWidth(palavrasSemEspacos);
+                    const espacl = maxWidth - larguraTexto;
+                    const espacoEntrePalavras = espacoTotal / (palavras.length - 1);
+                    
+                    let xAtual = x;
+                    palavras.forEach((palavra, i) => {
+                        doc.text(palavra, xAtual, y);
+                        if (i < palavras.length - 1) {
+                            xAtual += doc.getTextWidth(palavra) + espacoEntrePalavras;
+                        }
+                    });
+                }
+
+                y += lineHeight;
+            });
+
+            return y;
+        }
+
+
+        function padRight(label, value, width = 30) {
+            const total = `${label}: ${value}`;
+            return total.padEnd(width, ' ');
+        }
+
+        function toggleSections() {
+            const checkAssociado = document.getElementById('checkAssociado');
+            
+            // Seções do Associado
+            const secaoAssociado = document.getElementById('secaoAssociado');
+            const secaoVeiculoAssociado = documengetElementById('secaoVeiculoAssociado');
+            const secaoAcidente = document.getElementById('secaoAcidente');
+            const secaoCondutor = document.getElementById('secaoCondutor');
+            
+            // Mostrar/Ocultar seções do Associado
+            if (checkAssociado.checked) {
+                secaoAssociado.style.display = 'block';
+                secaoVeiculoAssociado.style.display = 'block';
+                secaoAcidente.style.display = 'block';
+                secaoCondutor.style.dplay = 'block';
+            } else {
+                secaoAssociado.style.display = 'none';
+                secaoVeiculoAssociado.style.display = 'none';
+                secaoAcidente.style.display = 'none';
+                secaoCondutor.style.display = 'none';
+            }
+        }
+
+        function createTerceirosFields() {
+            const quantidade = parseInt(document.getElementById('quantosTerceiros').value) || 0;
+            const container = document.getElementById('terceirosContainer');
+
+            // Limpar campos existentes
+            container.innerHTML = '';
+            terceirosCount = quantidade;
+
+            // Se houver 1 ou mais terceiros, marcar automaticamente o checkbox do associado
+            const checkAssociado = document.getElementById('checkAssociado');
+            if (quantidade > 0) {
+                checkAssociado.checked = true;
+                toggleSections(); // Garante que as seções do associado sejam exibidas
+                checkAssociado.disabled = true; // Impede smarcar
+            } else {
+                checkAssociado.checked = false;
+                toggleSections();
+                checkAssociado.disabled = false;
+            }
+
+            // Criar campos para cada terceiro
+            for (let i = 1; i <= quantidade; i++) {
+                createTerceiroSection(i);
+            }
+        }
+
+
+        function createTerceiroSection(numero) {
+            const container = document.getElementById('terceirosContainer');
+            
+            // Seção de dadoso terceiro
+            const secaoTerceiro = document.createElement('div');
+            secaoTerceiro.className = 'form-section';
+            secaoTerceiro.innerHTML = `
+                <h2 class="section-title">Dados do Terceiro ${numero}</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nomeTerceiro${numero}">Condutor/Razão:</label>
+                        <input type="text" id="nomeTerceiro${numero}" name="nomeTerceiro${numero}"
+                    </div>
+                    <div class="form-group">
+                        <label for="cpfCnpjTerceiro${numero}">CPF/CNPJ:</label>
+                        <input type="text" id="cpfCnpjTerceiro${numero}" name="cpfCnpjTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label for="rgIeTerceiro${numero}">RG/I.E.:</label>
+                        <input type="text" id="rgIeTerceiro${numero}" name="rgIeTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label for="cnhTerceiro${numero}">CNH:</label>
+                        <input type="text" id="cnhTerceiro${numero}" name="cnhTerceiro${numero}">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="enderecoTerceiro${numero}">Endereço:</label>
+                        <input type="text" id="enderecoTerceiro${numero}" name="enderecoTerceiro${numero}">
+                   </div>
+                    <div class="form-group">
+                        <label for="bairroTerceiro${numero}">Bairro:</label>
+                        <input type="text" id="bairroTerceiro${numero}" name="bairroTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label for="cidadeTerceiro${numero}">Cidade:</label>
+                        <input type="text" id="cidadeTerceiro${numero}" name="cidadeTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label for="cepTerceiro${numero}">CEP:</label>
+                        <input type="text" id="cepTerceiro${numero}" name="cepTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label for="whatsappTerceiro${numero}">WhatsApp:</label>
+                        <input type="text" id="whatsappTerceiro${numero}" name="whatsappTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label for="celularTerceiro${numero}">Cel:</label>
+                        <input type="text" id="celularTerceiro${numero}" name="celularTerceiro${numero}">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="emailTerceiro${numero}">Email:</label>
+                        <input type="email" id="emailTerceiro${numero}" name="emailTerceiro${numero}">
+                    </div>
+                </div>
+            `;
+
+            // Seção de dados do veículo do terceiro
+            const secaoVeiculoTerceiro = document.createElement('div');
+            secaoVeiculoTerceiro.className = 'form-section';
+            secaoVeiculoTerceiro.innerHTML = `
+                <h2 class="section-title">Dados do Veículo Terceiro ${numero}</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="marcaTerceiro${numero}"ca (Fabricante):</label>
+                        <input type="text" id="marcaTerceiro${numero}" name="marcaTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label for="modeloTerceiro${numero}">Modelo:</label>
+                        <input type="text" id="modeloTerceiro${numero}" name="modeloTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label for="placaTerceiro${numero}">Placa:</label>
+                        <input type="text" id="placaTerceiro${numero}" name="placaTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label for="chassiTerceiro${numero}">Chassi:</label>
+                        <input type="text" id="chassiTerceiro${numero}" name="chassiTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label for="anoFabTerceiro${numero}">Ano (Fab./Mod.):</label>
+                        <input type="text" id="anoFabTerceiro${numero}" name="anoFabTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label for="portasTerceiro${numero}">Portas:</label>
+                        <input type="number" id="portasTerceiro${numero}" name="portasTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label>Alienado (Financiado):</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="radio" name="alienadoTerceiro${numero}" value="Sim"> Sim
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="radio" name="alienadoTerceiro${numero}" value="Não"> Não
+                            </label>
+                        </div>
+                    </div>
+                  <div class="form-group">
+                        <label for="financeiraTerceiro${numero}">Financeira:</label>
+                        <input type="text" id="financeiraTerceiro${numero}" name="financeiraTerceiro${numero}">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria:</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="radio" name="categoriaTerceiro${numero}" value="Particular"> Particular
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="radio" name="categoriaTerceiro${numero}" value="Táxi"> Táxi
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="radio" name="categoriaTerceiro${numero}" value="Aluguel"> Aluguel
+                            </labe
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(secaoTerceiro);
+            container.appendChild(secaoVeiculoTerceiro);
+
+            // Aplicar máscaras aos novos campos
+            applyMasksToTerceiro(numero);
+        }
+
+        function applyMasksToTerceiro(numero) {
+            // Máscara para CPF/CNPJ
+            const cpfCnpjField = document.getElementById(`cpfCnpjTerceiro${numero}`);
+            if (cpfCnpjField) {               cpfCnpjField.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 11) {
+                        value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                    } else {
+                        value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+                    }
+                    e.target.value = value;
+                });
+            }
+
+            // Máscara para CEP
+            const cepField = document.getElementById(`cepTerceiro${numero}`);
+            if (cepField) {
+                cepField.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    value = value.replace(/(\d{5})(\d{3})/, '$1-$2');
+                    e.target.value = value;
+                });
+            }
+
+            // Máscara para WhatsApp e Celular
+            const whatsappField = document.getEmentById(`whatsappTerceiro${numero}`);
+            const celularField = document.getElementById(`celularTerceiro${numero}`);
+            
+            [whatsappField, celularField].forEach(field => {
+                if (field) {
+                    field.addEventListener('input', function(e) {
+                        let value = e.target.value.replace(/\D/g, '');
+                        if (value.length <= 10) {
+                            value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+                        } else {
+                            value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                        }
+                        e.target.value = value;
+                    });
+                }
+            });
+
+            // Máscara para placa
+            const placaField = document.getElementById(`placaTerceiro${numero}`);
+            if (placaField) {
+                placaField.addEventListener('input', function(e) {
+                    let value = e.target.value.relace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                    if (value.length <= 7) {
+                        value = value.replace(/([A-Z]{3})([0-9]{1})([A-Z0-9]{1})([0-9]{2})/, '$1-$2$3$4');
+                        if (value.length === 8 && /[A-Z]{3}-[0-9][A-Z][0-9]{2}/.test(value)) {
+                            // Formato Mercosul
+                        } else if (value.length === 8) {
+                            // Formato antigo
+                            value = value.replace(/([A-Z]{3})-([0-9]{4})/, '$1-$2');
+                        }
+                    }
+                    e.target.value = value;
+                });
+            }
+        }
+
+        function toggleCondutor() {
+            const checkEuMesmo = document.getElementById('checkEuMesmo');
+            const camposCondutor = document.getElementById('camposCondutor');
+            
+            if (checkEuMesmo.checked) {
+                camposCondutor.style.display = 'none';
+            } else {
+                camposCondutor.style.display = 'block';
+            }
+        }
+
+        function setupFileUploads() {
+            const fileInputs = ['anexoDocumentosAssociado', 'anexoDocumentosTerceiro', 'anexoFotos', 'anexoVideos'];
+            const erroDiv = document.getElementById('erroUpload');
+            const botaoPDF = document.querySelector('.generate-btn');
+
+            fileInputs.forEach(inputId => {
+                let tipo;
+                if (inputId === 'anexoDocumentosAssociado') {
+                    tipo = 'documentosAssociado';
+                } else if (inputId === 'anexoDocumentosTerceiro') {
+                    tipo = 'documentosTerceiro';
+                } else {
+                    tipo = inputId.replace('anexo', '').toLowerCase();
+                }
+                const input = document.getElementById(inputId);
+                const listContainer = document.getElementById(`${tipo}List`);
+
+                input.addEventListener('change', function (e) {
+                    const novos = Array.from(e.target.files);
+
+                    // Se já havia arquivos e o usuário adicionou só 1 novo = sobrescreveu
+                    const sobrescreveu = uploadedFiles[tipo].length > 0 && novos.length === 1;
+
+                    if (sobrescreveu) {
+                        erroDiv.classList.add('ativo');
+                        botaoPDF.disabled = true;
+                        botaoPDF.classList.add('bloqueado');
+                        input.value = '';
+                        return;
+                    }
+
+                    // Caso conrio, remove o erro (se for a última pendência)
+                    if (novos.length > 1 || uploadedFiles[tipo].length === 0) {
+                        erroDiv.classList.remove('ativo');
+                        botaoPDF.disabled = false;
+                        botaoPDF.classList.remove('bloqueado');
+                    }
+
+                    novos.forEach(file => {
+                        const existe = uploadedFiles[tipo].some(f => f.name === file.name && f.size === file.size);
+                        if!existe) {
+                            uploadedFiles[tipo].push(file);
+                            addFileToList(file, tipo, listContainer);
+                        }
+                    });
+
+                    input.value = '';
+                });
+            });
+        }
+
+        function addFileToList(file, tipo, container) {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <span>${file.name}</span>
+                <button type="button" class="file-remove" onclick="removeFile('${file.name}', '${tipo}', this)">×</button>
+            `;
+            container.appendChild(fileItem);
+        }
+
+        function removeFile(fileName, type, button) {
+            uploadedFiles[type] = uploadedFiles[type].filter(file => file.name !== fileName);
+            button.parentElement.remove();
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '______/_______/20______';
+           const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function getFormValue(id) {
+            const element = document.getElementById(id);
+            return element ? element.value : '';
+        }
+
+        function getRadioValue(name) {
+            const radio = document.querySelector(`input[name="${name}"]:checked`);
+            return radio ? radio.value : '';
+        }
+
+        // Função para criar campos tabulados no PDF
+        function createTabField(label, value, tabWidth = 40) {
+            const labelPart = `${label}:`;
+            const spaces = ' '.repeat(Math.max(1, tabWidth - labelPart.length));
+            return `${labelPart}${spaces}${value || '_'.repeat(30)}`;
+        }
+
+        // Função para criar campos inline com tabulação
+        function createInlineFfields, totalWidth = 90) {
+            const fieldWidth = Math.floor(totalWidth / fields.length);
+            return fields.map(field => {
+                const labelPart = `${field.label}:`;
+                const valueSpace = fieldWidth - labelPart.length - 2;
+                const value = field.value || '_'.repeat(Math.max(10, valueSpace));
+                return `${labelPart} ${value}`;
+            }).join('   ');
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Configurações do documento
+            doc.setFont("helvetica");
+            let yPosition = 15;
+            const lineHeight = 5.5;
+            const pageWidth = 210;
+            const margin = 10;
+            const maxY = 280; // Limite para quebra de página
+            
+            // Função para verificar quebra de página
+            function checkPageBreak(neededSpace = 20) {
+                if (yPosition + neededSpace > maxY) {
+              doc.addPage();
+                    yPosition = 15;
+                    return true;
+                }
+                return false;
+            }
+            
+            // Título e Logo
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            
+            const logoBase64 = "data:image/png;base64,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";
+            const logoWidth = 45;
+            const logoHeight = 20;
+            const logoX = 10;
+            const logoY = 10;
+
+            if (logoBase64) {
+                doc.addImage(logoBase64, 'PNG', logoX, logoY, logoWidth, logoHeight);
+            }
+
+            const titleY = logoY + logoHeight / 2 + 2;
+            const data = new Date();
+            const numeroProtocolo = `${data.getFullYear()}${String(data.getMonth() + 1).padStart(2, '0')}${String(data.getDate()).padStart(2, '0')}-${data.getTime()}`;
+
+            doc.text("TERMO DE ACIONAMENTO", 105, titleY, { align: 'center' });
+            doc.setFontSize(8);
+            doc.text(`Protocolo: ${numeroProtocolo}`, 150, yPosition); // Ajuste horizontal se necessário
+            yPosition = logoY + logoHeight + 8;
+            
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            
+            // Função melhorada para adicionar seções
+            function addSection(title, fields, drawBox = false) {
+                const sectionHeight = (fields.length * lineHeight) + 15;
+                checkPageBreak(sectionHeight);
+                
+                const sectionStartY = yPosition;
+                
+           // Título da seção
+                doc.setFont("helvetica", "bold");
+                doc.text(title, margin + 3, yPosition);
+                yPosition += 8;
+                doc.setFont("helvetica", "normal");
+                
+                // Campos da seção
+                fields.forEach(field => {
+                    if (field && field.trim()) { // Só adiciona campos não vazios
+                        doc.text(field, margin + 3, yPosition);
+                        yPosition += lineHeigh                }
+                });
+                
+                // Desenhar caixa se solicitado
+                if (drawBox) {
+                    const boxHeight = yPosition - sectionStartY + 2;
+                    doc.setLineWidth(0.3);
+                    doc.rect(margin - 2, sectionStartY - 4, pageWidth - 2 * margin + 4, boxHeight);
+                }
+                
+                yPosition += 4; // Espaçamento entre seções
+            }
+            
+            // Função para criar camposmelhor formatação
+            function createField(label, value, width = 35) {
+                const cleanValue = (value || '').trim();
+                const displayValue = cleanValue || '_'.repeat(Math.max(15, width - label.length - 2));
+                return `${label}: ${displayValue}`;
+            }
+            
+            // Função para campos inline melhorada
+            function createInlineFields(fields) {
+                return fields.map(field => {
+                    const cleanValue = (fiellue || '').trim();
+                    const displayValue = cleanValue || '_'.repeat(15);
+                    return `${field.label}: ${displayValue}`;
+                }).join('   ');
+            }
+
+            // Verifica checkbox associado
+            const associado = document.getElementById('checkAssociado').checked;
+            const quantidadeTerceiros = parseInt(document.getElementById('quantosTerceiros').value) || 0;
+
+            let acionamentoPara = '';
+            if (associado && quantidadeTerceiros > 0) {
+                acionamentoPara = `Associado e ${quantidadeTerceiros} Terceiro(s)`;
+            } else if (associado) {
+                acionamentoPara = 'Associado';
+            } else if (quantidadeTerceiros > 0) {
+                acionamentoPara = `${quantidadeTerceiros} Terceiro(s)`;
+            } else {
+                acionamentoPara = 'Nenhum selecionado';
+            }
+
+            // ACIONAMENTO PARA
+            addSection("ACIONAMENTO PARA:", [
+                `${acionamentoPara}`
+            ], true);
+
+            // DADOS DO ASSOCIADO (só se selecionado)
+            if (associado) {
+                const associadoFields = [
+                    createField("Nome/Razão", getFormValue('nomeAssociado'), 50),
+                    createInlineFields([
+                        {label: "CPF/CNPJ", value: getFormValue('cpfCnpjAssociado')},
+                        {label: "RG/I.E.", value: getFormValue('rgIeAssociado')},
+                        {label: "CNH", value: getFormValue('cnhAssociado')}                   ]),
+                    createField("Endereço", getFormValue('enderecoAssociado'), 60),
+                    createInlineFields([
+                        {label: "Bairro", value: getFormValue('bairroAssociado')},
+                        {label: "Cidade", value: getFormValue('cidadeAssociado')},
+                        {label: "CEP", value: getFormValue('cepAssociado')}
+                    ]),
+                    createInlineFields([
+                        {label: "WhatsApp", value: getFomValue('whatsappAssociado')},
+                        {label: "Celular", value: getFormValue('celularAssociado')}
+                    ]),
+                    createField("Email", getFormValue('emailAssociado'), 50)
+                ];
+                
+                addSection("DADOS DO ASSOCIADO", associadoFields, true);
+
+                // DADOS DO VEÍCULO ASSOCIADO
+                const veiculoAssociadoFields = [
+                    createInlineFields([
+                        {label: "Marca", value: geFormValue('marcaAssociado')},
+                        {label: "Modelo", value: getFormValue('modeloAssociado')},
+                        {label: "Placa", value: getFormValue('placaAssociado')}
+                    ]),
+                    createInlineFields([
+                        {label: "Chassi", value: getFormValue('chassiAssociado')},
+                        {label: "Portas", value: getFormValue('portasAssociado')},
+                        {label: "Ano", value: getFormValue('anoFabAssociado')}
+                    ]),
+                    createInlineFields([
+                        {label: "Alienado", value: getRadioValue('alienadoAssociado') || '( ) Sim ( ) Não'},
+                        {label: "Financeira", value: getFormValue('financeiraAssociado')}
+                    ]),
+                    createField("Categoria", getRadioValue('categoriaAssociado') || '( ) Particular ( ) Táxi ( ) Aluguel')
+                ];
+                
+                addSection("DADOS DO VEICULO ASSOCIADO", veiculoAssociadields, true);
+                
+                // DADOS DO ACIDENTE
+                const acidenteFields = [
+                    createInlineFields([
+                        {label: "Data", value: formatDate(getFormValue('dataOcorrencia'))},
+                        {label: "Hora", value: getFormValue('horaOcorrencia')},
+                        {label: "Nº Registro", value: getFormValue('numeroRegistro')}
+                    ]),
+                    createField("Culpado", getRadioValue('culpadoAcidente') || ( ) Associado ( ) Terceiro')
+                ];
+                
+                addSection("DADOS DO ACIDENTE", acidenteFields, true);
+                
+                // CONDUTOR (só se não for "eu mesmo" e tiver dados)
+                const checkEuMesmo = document.getElementById('checkEuMesmo');
+                const nomeCondutor = getFormValue('nomeCondutor').trim();
+                
+                if (!checkEuMesmo.checked && nomeCondutor) {
+                    const condutorFields = [
+                      createInlineFields([
+                            {label: "Nome", value: nomeCondutor},
+                            {label: "CPF", value: getFormValue('cpfCondutor')}
+                        ]),
+                        createInlineFields([
+                            {label: "RG", value: getFormValue('rgCondutor')},
+                            {label: "CNH", value: getFormValue('cnhCondutor')}
+                        ]),
+                        createField("Endereço", getFormValue('enderecoCondutor), 60),
+                        createInlineFields([
+                            {label: "Bairro", value: getFormValue('bairroCondutor')},
+                            {label: "Cidade", value: getFormValue('cidadeCondutor')},
+                            {label: "Tel", value: getFormValue('telefoneCondutor')}
+                        ]),
+                        createField("Relação com Associado", getFormValue('relacaoAssociado'))
+                    ];
+                    
+                    addSection("COUTOR", condutorFields, true);
+                }
+            }
+            
+            // DADOS DOS TERCEIROS
+            for (let i = 1; i <= quantidadeTerceiros; i++) {
+                const nomeTerceiro = getFormValue(`nomeTerceiro${i}`).trim();
+                
+                if (nomeTerceiro) {
+                    const terceiroFields = [
+                        createField("Nome/Razão", nomeTerceiro, 50),
+                        createInlineFields([
+                            {label: "CPF/CNPJ", vaue: getFormValue(`cpfCnpjTerceiro${i}`)},
+                            {label: "RG/I.E.", value: getFormValue(`rgIeTerceiro${i}`)},
+                            {label: "CNH", value: getFormValue(`cnhTerceiro${i}`)}
+                        ]),
+                        createField("Endereço", getFormValue(`enderecoTerceiro${i}`), 60),
+                        createInlineFields([
+                            {label: "Bairro", value: getFormValue(`bairroTerceiro${i}`)},
+                            {label: "Cidade, value: getFormValue(`cidadeTerceiro${i}`)},
+                            {label: "CEP", value: getFormValue(`cepTerceiro${i}`)}
+                        ]),
+                        createInlineFields([
+                            {label: "WhatsApp", value: getFormValue(`whatsappTerceiro${i}`)},
+                            {label: "Celular", value: getFormValue(`celularTerceiro${i}`)}
+                        ]),
+                        createField("Email", getFormValue(`emailTerceiro${i}`), 50)
+                    ];
+                    
+                    addSection(`DADOS DO TERCEIRO ${i}`, terceiroFields, true);
+                }
+                
+                // DADOS DO VEÍCULO DO TERCEIRO
+                const marcaTerceiro = getFormValue(`marcaTerceiro${i}`).trim();
+                
+                if (marcaTerceiro) {
+                    const veiculoTerceiroFields = [
+                        createInlineFields([
+                            {label: "Marca", value: marcaTerceiro},
+                           {label: "Modelo", value: getFormValue(`modeloTerceiro${i}`)},
+                            {label: "Placa", value: getFormValue(`placaTerceiro${i}`)}
+                        ]),
+                        createInlineFields([
+                            {label: "Chassi", value: getFormValue(`chassiTerceiro${i}`)},
+                            {label: "Portas", value: getFormValue(`portasTerceiro${i}`)},
+                            {label: "Ano", value: getFormValue(`anoFabTerceiro${i}`)}
+                        ]),
+                        createInlineFields([
+                            {label: "Alienado", value: getRadioValue(`alienadoTerceiro${i}`) || '( ) Sim ( ) Não'},
+                            {label: "Financeira", value: getFormValue(`financeiraTerceiro${i}`)}
+                        ]),
+                        createField("Categoria", getRadioValue(`categoriaTerceiro${i}`) || '( ) Particular ( ) Táxi ( ) Aluguel')
+                    ];
+                    
+                    addSection(`DADOSO VEICULO TERCEIRO ${i}`, veiculoTerceiroFields, true);
+                }
+            }
+            
+            // NARRATIVA DO ACIDENTE
+            checkPageBreak(30);
+            doc.setFont("helvetica", "bold");
+            doc.text("NARRATIVA DO ACIDENTE", margin, yPosition);
+            yPosition += 8;
+            doc.setFont("helvetica", "normal");
+            
+            const narrativa = getFormValue('narrativaAcidente').trim();
+            if (narrativa) {
+                const lines = doc.splitTextToSize(narrativa, pageWidth - 2 * margin - 6);
+                lines.forEach(line => {
+                    checkPageBreak(6);
+                    doc.text(line, margin + 3, yPosition);
+                    yPosition += 4.5;
+                });
+            } else {
+                // Espaço em branco para narrativa
+                for (let i = 0; i < 6; i++) {
+                    checkPageBreak(6);
+                    doc.text("_".repeat(80), margin + 3, yPosition);
+                    yPosition += 5;
+               }
+            }
+            
+            yPosition += 8;
+            
+            // ANEXOS
+            let hasAnexos = false;
+            let anexosDetalhes = [];
+            
+            if (uploadedFiles.documentosAssociado.length > 0) {
+                anexosDetalhes.push(`       Documentos Associado (${uploadedFiles.documentosAssociado.length})`);
+                hasAnexos = true;
+            }
+            if (uploadedFiles.documentosTerceiro.length > 0) {
+                anexosDetalhes.push(`       Documentos Terceiro (${uploadedFiles.documentosTerceiro.length})`);
+                hasAnexos = true;
+            }
+
+            if (uploadedFiles.fotos.length > 0) {
+                anexosDetalhes.push(`       Fotos (${uploadedFiles.fotos.length})`);
+                hasAnexos = true;
+            }
+            if (uploadedFiles.videos.length > 0) {
+                anexosDetalhes.push(`       Vídeos (${uploadedFiles.videos.length})`);
+                hasAnexos = true;
+            }
+            
+           if (hasAnexos) {
+                checkPageBreak(anexosDetalhes.length * lineHeight + 15);
+                doc.setFont("helvetica", "bold");
+                doc.text("ANEXOS:", margin, yPosition);
+                doc.setFont("helvetica", "normal");
+                yPosition += lineHeight + 2;
+                
+                anexosDetalhes.forEach(detalhe => {
+                    doc.text(detalhe, margin, yPosition);
+                    yPosition += lineHeight;
+                });
+                yPosition += 8;
+            }
+            
+            // TEXTO DE DECLARAÇÃO
+            const hoje = new Date();
+            const cidade = getFormValue('cidadeAssociado').trim() || 'Betim';
+            const dia = hoje.getDate();
+            const mes = hoje.toLocaleDateString('pt-BR', { month: 'long' });
+            const ano = hoje.getFullYear();
+            
+            checkPageBreak(40);
+            
+            doc.text(`       ${cidade}, ${dia} de ${mes} de ${ano}.`, margin, yPosition);
+          yPosition += 12;
+            
+            const textoDeclaracao = `       Nesta ato, declaro minha ciência e concordância de que, quando aplicável, todos os direitos referentes à cobranças dos prejuízos provenientes do referido acidente são exclusivos da Auto Care, que ao arcar com o conserto do veículo, sub-rogou-se em tal direito nos termos do artigo 349 do Código Civil Brasileiro, tendo esta exclusiva legitimidade para interpor cobrança judicial ou extrajudicial diante do causador do acidente, ado sua culpabilidade civil. Declaro ainda que me foi oferecido o serviço juridico da Auto Care para ressarcir o valor que paguei sobre a Taxa de Acionamento, contratualmente estabelecido, e que caso tenha interesse, o ressarcimento será cobrado, sendo que, se houver sucesso me será devolvido integralmente o valor da Taxa de Acionamento paga, sem correção monetária. Declaro ainda serem expressões verdadeiras prestadas acima e assumo inteira responsabilidade de acordo com o ART. 299 do Código Penal.`      
+            const marginn = 20;
+            const pageWidthH = doc.internal.pageSize.getWidth();
+            const lineHeightt = 4.5;
+
+            yPosition = justificarTexto(doc, textoDeclaracao, marginn, yPosition, pageWidthH - 2 * marginn, lineHeightt);
+            
+            yPosition += 15;
+            checkPageBreak(10);
+            
+            // Linha para assinatura
+            doc.text("       Assinatura: _____________________________________________", margin, yPosition);
+
+            // Enviar dados para o webhook do n8n
+            const webhookURL = "http://localhost:5678/webhook-test/api";
+
+            const formData = new FormData();
+
+            // Adiciona os arquivos
+            const tipos = {
+                documentosAssociado: 'anexoDocumentosAssociado',
+                documentosTerceiro: 'anexoDocumentosTerceiro',
+                fotos: 'anexoFotos',
+                videos: 'anexoVideos'
+            };
+
+            Object.entries(uploadedFiles).forEach(([tipo, arquivos]) => {
+                arquivos.forEach((file, index) => {
+                    formData.append(`${tipo}_${index}`, file);
+                    console.log(`Adicionado ${tipo}_${index}:`, file.name);
+                });
+            });
+
+            // Adiciona narrativa
+            formData.append('narrativa', narrativa || 'Não preenchido');
+
+            // Opcional: enviar nome e placa para identificação
+            formData.append('nomeAssociado', getFormValue('nomeAssociado') || 'Não preenchido');
+          rmData.append('placaAssociado', getFormValue('placaAssociado') || 'Não preenchido');
+
+            // Opcional: enviar nome e placa do terceiro
+            const nomesTerceiros = Array.from(document.querySelectorAll('.terceiro-nome')).map(input => input.value.trim());
+            const placasTerceiros = Array.from(document.querySelectorAll('.terceiro-placa')).map(input => input.value.trim());
+            const terceiros = nomesTerceiros.map((nome, i) => ({
+                nome,
+                placa: placaserceiros[i] || ''
+            }));
+            formData.append('terceiros', JSON.stringify(terceiros));
+
+
+            for (let pair of formData.entries()) {
+                console.log(`${pair[0]}:`, pair[1]);
+            }
+
+            fetch(webhookURL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao enviar dados para o webhook');
+                return response.text();
+            })
+            .then(data => {
+                console.log("Webhook recebido com sucesso:", data);
+                alert("Download concluido!");
+            })
+            .catch(error => {
+                console.error("Erro ao enviar para webhook:", error);
+                alert("Ocorreu um erro no webhook");
+            });
+
+
+            // Salvar o PDF
+            const placaAssociado = getFormValue('placaAssociado').trim() || 'SEM_PLACA';
+            const nomeArquivo = placaAssociado.replace(/[^a-zA-Z0-9]/g, '_');
+            doc.save(`${nomeArquivo}-TERMO_DE_ACIONAMENTO.pdf`);
+
+        }
+
+        // ENVIANDO A NARRATIVA DIRETO PARA A API
+        function enviarMensagem() {
+            // Captura o valor do textarea
+            const mensagem = document.getElementById("narrativaAcidente").value.trim();
+            const placaAssociado = document.getElementById("placaAssociado").value.trim();
+            const nomeAssociado = document.getElementById("nomeAssociado").value.trim();
+
+            if (!mensagem) {
+                alert("Por favor, preencha a narrativa do acidente.");
+                return;
+            }
+
+            const respostaFinal = 
+                `Narrativa: ${mensagem}`;
+
+            const dados = {
+                resposta: respostaFinal
+            };
+
+            // Envia para a API usando fetch
+            fetch("http://host.docker.internal:5000/receber", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dados)
+            })
+            .then(response => response.json())
+            .then(data => {
+            console.log("Resposta da API:", data);
+            })
+            .catch(error => {
+            console.error("Erro ao enviar:", error);
+            alert("Erro ao enviar a mensagem.");
+            });
+        }
+
+        // Funções auxiliares (manter as existentes)
+        function formatDate(dateString) {
+            if (!dateString) return '______/_______/20______';
+          const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function getFormValue(id) {
+            const element = document.getElementById(id);
+            return element ? element.value.trim() : '';
+        }
+
+        function getRadioValue(name) {
+            const radio = document.querySelector(`input[name="${name}"]:checked`);
+            return radio ? radio.value : '';
+        }
+
+        function validarFormulario() {
+            const erros = [];
+            const camposComErro = [];
+            
+            // Limpar erros anteriores
+            document.querySelectorAll('.campo-erro').forEach(campo => {
+                campo.classList.remove('campo-erro');
+            });
+            
+            const associadoMarcado = document.getElementById('checkAssociado').checked;
+            const quantidadeTerceiros = parseInt(document.getElementById('quantosTerceiros').value) || 0;
+            
+            // Verificar se pelo menos uma opção foi selecionada
+            if (!associadoMarcado && quantidadeTerceiros === 0) {
+                erros.push('Selecione pelo menos "Associado" ou informe a quantidade de terceiros');
+            }
+            
+            // Validações do Associado (se marcado)
+            if (associadoMarcado) {
+                const camposObrigatoriosAssociado                     { id: 'nomeAssociado', nome: 'Nome do Associado' },
+                    { id: 'cpfCnpjAssociado', nome: 'CPF/CNPJ do Associado' },
+                    { id: 'marcaAssociado', nome: 'Marca do Veículo Associado' },
+                    { id: 'modeloAssociado', nome: 'Modelo do Veículo Associado' },
+                    { id: 'placaAssociado', nome: 'Placa do Veículo Associado' },
+                    { id: 'dataOcorrencia', nome: 'Data da Ocorrência' }
+                ];
+                
+            camposObrigatoriosAssociado.forEach(campo => {
+                    const elemento = document.getElementById(campo.id);
+                    if (!elemento.value.trim()) {
+                        erros.push(campo.nome);
+                        camposComErro.push(elemento);
+                    }
+                });
+                
+                // Verificar se condutor foi preenchido (quando não é "eu mesmo")
+                const checkEuMesmo = document.getElementById('checkEuMesmo');
+              if (!checkEuMesmo.checked) {
+                    const nomeCondutor = document.getElementById('nomeCondutor');
+                    if (!nomeCondutor.value.trim()) {
+                        erros.push('Nome do Condutor (ou marque "Eu mesmo")');
+                        camposComErro.push(nomeCondutor);
+                    }
+                }
+            }
+            
+            // Validações dos Terceiros
+            for (let i = 1; i <= quantidadeTerceiros; i++) {
+                const camposObrigariosTerceiro = [
+                    { id: `nomeTerceiro${i}`, nome: `Nome do Terceiro ${i}` },
+                    { id: `cpfCnpjTerceiro${i}`, nome: `CPF/CNPJ do Terceiro ${i}` },
+                    { id: `marcaTerceiro${i}`, nome: `Marca do Veículo Terceiro ${i}` },
+                    { id: `modeloTerceiro${i}`, nome: `Modelo do Veículo Terceiro ${i}` },
+                    { id: `placaTerceiro${i}`, nome: `Placa do Veículo Terceiro ${i}` }
+                ];
+                
+                camposOgatoriosTerceiro.forEach(campo => {
+                    const elemento = document.getElementById(campo.id);
+                    if (elemento && !elemento.value.trim()) {
+                        erros.push(campo.nome);
+                        camposComErro.push(elemento);
+                    }
+                });
+            }
+            
+            // Verificar narrativa
+            const narrativa = document.getElementById('narrativaAcidente');
+            if (!narrativa.value.trim()) {
+                erros.push('Narrativa do Acidente');
+                camposComErro.push(narrativa);
+            }
+            
+            // Adicionar classe de erro aos campos
+            camposComErro.forEach(campo => {
+                campo.classList.add('campo-erro');
+            });
+            
+            return {
+                valido: erros.length === 0,
+                erros: erros
+            };
+        }
+
+        function generatePDFEEnviar() {
+            // Ocultar mensagem de erro anterior
+            document.getElementById('mensagemErro').classList.remove('show');
+            
+            // Validar formulário
+            const validacao = validarFormulario();
+            
+            if (!validacao.valido) {
+                // Bloquear botão temporariamente
+                const botao = document.querySelector('.generate-btn');
+                botao.classList.add('bloqueado');
+                botao.disabled = true;
+                
+                // Mostrar erros
+                mostrarErros(validacao.ers);
+                
+                // Desbloquear botão após 3 segundos
+                setTimeout(() => {
+                    botao.classList.remove('bloqueado');
+                    botao.disabled = false;
+                }, 3000);
+                
+                return; // Interrompe a execução
+            }
+            
+            // Se chegou até aqui, está tudo válido
+            generatePDF();
+            enviarMensagem();
+        }
+
+        // Inicializar máscaras para campos do associad  document.addEventListener('DOMContentLoaded', function() {
+            setupFileUploads();
+            
+            // Máscaras para CPF/CNPJ
+            document.getElementById('cpfCnpjAssociado').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length <= 11) {
+                    value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                } else {
+                    value = value.replace(/(\d{2})(d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+                }
+                e.target.value = value;
+            });
+
+            document.getElementById('cpfCondutor').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                e.target.value = value;
+            });
+
+            // Máscara para CEP
+            document.getElementById('cepAssociado').addEvenListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(\d{5})(\d{3})/, '$1-$2');
+                e.target.value = value;
+            });
+
+            // Máscara para telefone/WhatsApp/celular
+            ['whatsappAssociado', 'celularAssociado', 'telefoneCondutor'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', funtion(e) {
+                        let value = e.target.value.replace(/\D/g, '');
+                        if (value.length <= 10) {
+                            value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+                        } else {
+                            value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                        }
+                        e.target.value = value;
+                    });
+                }
+            });
+
+            // Máscara para placa
+           document.getElementById('placaAssociado').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                if (value.length <= 7) {
+                    value = value.replace(/([A-Z]{3})([0-9]{1})([A-Z0-9]{1})([0-9]{2})/, '$1-$2$3$4');
+                    if (value.length === 8 && /[A-Z]{3}-[0-9][A-Z][0-9]{2}/.test(value)) {
+                        // Formato Mercosul
+                    } else if (value.length === 8) {
+                        // Formato antigo
+                        value = value.replace(/([A-Z]{3})-([0-9]{4})/, '$1-$2');
+                    }
+                }
+                e.target.value = value;
+            });
+
+            document.querySelector('.generate-btn').disabled = false;
+            const botaoPDF = document.querySelector('.generate-btn');
+            botaoPDF.disabled = false;
+            botaoPDF.classList.remove('bloqueado');
+
+            
+
+        });
+
+        function mostrarErros(erros) {
+            const mensagemErro = document.getElementById('mensagemErro');
+            const listaErros = document.getElementById('listaErros');
+            
+            // Limpar lista anterior
+            listaErros.innerHTML = '';
+            
+            // Adicionar cada erro na lista
+            erros.forEach(erro => {
+                const li = document.createElement('li');
+                li.textContent = erro;
+                listaErros.appendChild(li);
+            });
+            
+            // Mostrar mensagem
+            mensagemErro.classList.add('show');
+            
+            // Rolar até a mensagem de erro
+            mensagemErro.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+            
+            // Ocultar mensagem após 10 segundos
+            setTimeout(() => {
+                mensagemErro.classList.remove('show');
+            }, 10000);
+        }
+    </script>
+</body>
+</html>
